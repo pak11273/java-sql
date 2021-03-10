@@ -31,7 +31,34 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
 
 ### Answer the following data queries. Keep track of the SQL you write by pasting it into this document under its appropriate header below in the provided SQL code block. You will be submitting that through the regular fork, change, pull process
 
-- [ ] **_find all customers that live in London. Returns 6 records_**
+- [x] **_find all customers that live in London. Returns 6 records_**
+
+  <details><summary>hint</summary>
+
+  - This can be done with SELECT and WHERE clauses
+  </details>
+
+```SQL
+SELECT *
+FROM customers
+WHERE city = 'London';
+
+```
+
+- [x] **_find all customers with postal code 1010. Returns 3 customers_**
+
+  <details><summary>hint</summary>
+
+  - This can be done with SELECT and WHERE clauses
+  </details>
+
+```SQL
+SELECT *
+FROM customers
+WHERE postal_code = '1010';
+```
+
+- [x] **_find the phone number for the supplier with the id 11. Should be (010) 9984510_**
 
   <details><summary>hint</summary>
 
@@ -42,29 +69,7 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
 
 ```
 
-- [ ] **_find all customers with postal code 1010. Returns 3 customers_**
-
-  <details><summary>hint</summary>
-
-  - This can be done with SELECT and WHERE clauses
-  </details>
-
-```SQL
-
-```
-
-- [ ] **_find the phone number for the supplier with the id 11. Should be (010) 9984510_**
-
-  <details><summary>hint</summary>
-
-  - This can be done with SELECT and WHERE clauses
-  </details>
-
-```SQL
-
-```
-
-- [ ] **_list orders descending by the order date. The order with date 1998-05-06 should be at the top_**
+- [x] **_list orders descending by the order date. The order with date 1998-05-06 should be at the top_**
 
   <details><summary>hint</summary>
 
@@ -72,22 +77,26 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM orders
+ORDER BY order_date DESC
 ```
 
-- [ ] **_find all suppliers who have names longer than 20 characters. Returns 11 records_**
+- [x] **_find all suppliers who have names longer than 20 characters. Returns 11 records_**
 
-  <details><summary>hint</summary>
+    <details><summary>hint</summary>
 
   - This can be done with SELECT and WHERE clauses
   - You can use `length(company_name)` to get the length of the name
   </details>
 
 ```SQL
-
+SELECT *
+FROM suppliers
+WHERE length(company_name) > 20;
 ```
 
-- [ ] **_find all customers that include the word 'MARKET' in the contact title. Should return 19 records_**
+- [x] **_find all customers that include the word 'MARKET' in the contact title. Should return 19 records_**
 
   <details><summary>hint</summary>
 
@@ -97,10 +106,12 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT *
+FROM customers
+WHERE upper(contact_tile) LIKE "%MARKET%";
 ```
 
-- [ ] **_add a customer record for_**
+- [x] **_add a customer record for_**
 - customer id is 'SHIRE'
 - company name is 'The Shire'
 - contact name is 'Bilbo Baggins'
@@ -114,10 +125,11 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+INSERT INTO customers(customer_id, company_name, contact_name, address, city, postal_code, country)
+VALUES ('SHIRE', 'The Shire', 'Bilbo Baggins', '1 Hobbit-Hole', 'Bag End', '111', 'Middle Earth')
 ```
 
-- [ ] **_update *Bilbo Baggins* record so that the postal code changes to *"11122"*_**
+- [x] **_update *Bilbo Baggins* record so that the postal code changes to *"11122"*_**
 
   <details><summary>hint</summary>
 
@@ -125,10 +137,12 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+UPDATE customers
+SET postal_code = '11122'
+WHERE contact_name = 'Bilbo Baggins'
 ```
 
-- [ ] **_list orders grouped and ordered by customer company name showing the number of orders per customer company name. *Rattlesnake Canyon Grocery* should have 18 orders_**
+- [x] **_list orders grouped and ordered by customer company name showing the number of orders per customer company name. *Rattlesnake Canyon Grocery* should have 18 orders_**
 
   <details><summary>hint</summary>
 
@@ -137,10 +151,13 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT c.company_name, COUNT(o.customer_id)
+FROM customers c JOIN orders o
+ON c.customer_id = o.customer_id
+GROUP BY company_name
 ```
 
-- [ ] **_list customers by contact name and the number of orders per contact name. Sort the list by the number of orders in descending order. *Jose Pavarotti* should be at the top with 31 orders followed by *Roland Mendal* with 30 orders. Last should be *Francisco Chang* with 1 order_**
+- [x] **_list customers by contact name and the number of orders per contact name. Sort the list by the number of orders in descending order. *Jose Pavarotti* should be at the top with 31 orders followed by *Roland Mendal* with 30 orders. Last should be *Francisco Chang* with 1 order_**
 
   <details><summary>hint</summary>
 
@@ -148,10 +165,15 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
+SELECT c.contact_name, COUNT(o.customer_id) as total
+FROM customers c JOIN orders o
+ON c.customer_id = o.customer_id
+GROUP BY contact_name
+ORDER BY total DESC
 
 ```
 
-- [ ] **_list orders grouped by customer's city showing the number of orders per city. Returns 69 Records with *Aachen* showing 6 orders and *Albuquerque* showing 18 orders_**
+- [x] **_list orders grouped by customer's city showing the number of orders per city. Returns 69 Records with *Aachen* showing 6 orders and *Albuquerque* showing 18 orders_**
 
   <details><summary>hint</summary>
 
@@ -159,14 +181,18 @@ Reimport the Northwind database into PostgreSQL using pgAdmin. This is the same 
   </details>
 
 ```SQL
-
+SELECT c.city, COUNT(o.customer_id) as total
+FROM customers c JOIN orders o
+ON c.customer_id = o.customer_id
+GROUP BY c.city
+ORDER BY c.city
 ```
 
 ## Data Normalization
 
 Note: This step does not use PostgreSQL!
 
-- [ ] **_Take the following data and normalize it into a 3NF database_**
+- [x] **_Take the following data and normalize it into a 3NF database_**
 
 | Person Name | Pet Name | Pet Type | Pet Name 2 | Pet Type 2 | Pet Name 3 | Pet Type 3 | Fenced Yard | City Dweller |
 | ----------- | -------- | -------- | ---------- | ---------- | ---------- | ---------- | ----------- | ------------ |
@@ -179,53 +205,25 @@ Below are some empty tables to be used to normalize the database
 - Not all of the cells will contain data in the final solution
 - Feel free to edit these tables as necessary
 
-Table Name:
+Table Name: Person
 
-|     |     |     |     |     |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
+| Person_id | name | fenced_yard | city_dweller |
+| --------- | ---- | ----------- | ------------ |
+| 1         | Jane | No          | Yes          |
+| 2         | Bob  | No          | No           |
+| 3         | Sam  | Yes         | No           |
 
-Table Name:
+Table Name: Pet
 
-|     |     |     |     |     |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-
-Table Name:
-
-|     |     |     |     |     |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-
-Table Name:
-
-|     |     |     |     |     |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
-|     |     |     |     |     |     |     |     |     |
+| Pet_id | pet_name   | pet_type | person_id |
+| ------ | ---------- | -------- | --------- |
+| 1      | Ellie      | Dog      | 1         |
+| 2      | Tiger      | Cat      | 1         |
+| 3      | Toby       | Turtle   | 1         |
+| 4      | Joe        | Horse    | 2         |
+| 5      | Ginger     | Dog      | 3         |
+| 6      | Miss Kitty | Cat      | 3         |
+| 7      | Bubble     | Fish     | 3         |
 
 ---
 
